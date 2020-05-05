@@ -2,9 +2,7 @@ package xyz.osamusasa.map;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
+import java.awt.event.*;
 
 public class TiledMapView extends JComponent {
     /**
@@ -20,6 +18,7 @@ public class TiledMapView extends JComponent {
         this.map = map;
         setMouseListener(map);
         setMouseMotionListener(map);
+        setMouseWheelListener(map);
     }
 
     /**
@@ -107,6 +106,22 @@ public class TiledMapView extends JComponent {
 
             public void mouseMoved(MouseEvent e) {
                 mml.mouseMoved(e);
+            }
+        });
+    }
+
+    /**
+     * マウスホイールリスナーをセット
+     * @param map 対象の {@code TiledMap} オブジェクト
+     */
+    private void setMouseWheelListener(final TiledMap map) {
+        final MouseWheelListener mwl = map.getMouseWheelListener();
+        addMouseWheelListener(new MouseWheelListener() {
+            public void mouseWheelMoved(MouseWheelEvent e) {
+                if (map.contains(e.getX(), e.getY())) {
+                    mwl.mouseWheelMoved(e);
+                    repaint();
+                }
             }
         });
     }

@@ -1,9 +1,7 @@
 package xyz.osamusasa.map;
 
 import java.awt.*;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
+import java.awt.event.*;
 
 public class TiledMap {
     /**
@@ -58,6 +56,7 @@ public class TiledMap {
         this.height = 100;
 
         this.isClicked = false;
+        this.magnification = 1.0;
     }
 
     /**
@@ -66,7 +65,7 @@ public class TiledMap {
      */
     void draw(Graphics g) {
         g.setColor(color);
-        g.fillRect(posX, posY, width, height);
+        g.fillRect(posX, posY, (int)(width * magnification), (int)(height * magnification));
     }
 
     /**
@@ -77,8 +76,8 @@ public class TiledMap {
      *         範囲外であれば {@code false}.
      */
     boolean contains(int x, int y) {
-        int w = this.width;
-        int h = this.height;
+        int w = (int)(this.width * magnification);
+        int h = (int)(this.height * magnification);
 //        if ((w | h) < 0) {
 //            // At least one of the dimensions is negative...
 //            return false;
@@ -136,6 +135,18 @@ public class TiledMap {
             }
 
             public void mouseMoved(MouseEvent e) {}
+        };
+    }
+
+    /**
+     * マウスホイールリスナーを取得
+     * @return {@code MouseWheelListener} オブジェクト
+     */
+    MouseWheelListener getMouseWheelListener(){
+        return new MouseWheelListener() {
+            public void mouseWheelMoved(MouseWheelEvent e) {
+                magnification *= ( 1 - e.getWheelRotation() * 0.1);
+            }
         };
     }
 }
