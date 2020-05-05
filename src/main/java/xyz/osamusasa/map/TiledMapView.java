@@ -7,8 +7,15 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 
 public class TiledMapView extends JComponent {
-    private final TiledMap map;
+    /**
+     * マップ
+     */
+    private TiledMap map;
 
+    /**
+     * コンストラクタ
+     * @param map 描画するマップオブジェクト
+     */
     public TiledMapView(TiledMap map) {
         this.map = map;
         setMouseListener(map);
@@ -47,6 +54,10 @@ public class TiledMapView extends JComponent {
         map.draw(g);
     }
 
+    /**
+     * マウスリスナーをセット
+     * @param map 対象の {@code TiledMap} オブジェクト
+     */
     private void setMouseListener(final TiledMap map) {
         final MouseListener ml = map.getMouseListener();
         addMouseListener(new MouseListener() {
@@ -81,6 +92,11 @@ public class TiledMapView extends JComponent {
             }
         });
     }
+
+    /**
+     * マウスモーションリスナーをセット
+     * @param map 対象の {@code TiledMap} オブジェクト
+     */
     private void setMouseMotionListener(final TiledMap map) {
         final MouseMotionListener mml = map.getMouseMotionListener();
         addMouseMotionListener(new MouseMotionListener() {

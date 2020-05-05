@@ -6,17 +6,46 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 
 public class TiledMap {
+    /**
+     * タイルの左上のX座標
+     */
     private int posX;
+    /**
+     * タイルの左上のY座標
+     */
     private int posY;
 
+    /**
+     * 幅
+     */
     private int width;
+    /**
+     * 高さ
+     */
     private int height;
 
+    /**
+     * タイルの色
+     */
     private Color color;
 
+    /**
+     * ドラッグ中であるか
+     */
     private boolean isClicked;
+    /**
+     * ドラッグ中の前回位置のX座標
+     */
     private int prevX;
+    /**
+     * ドラッグ中の前回位置のY座標
+     */
     private int prevY;
+
+    /**
+     * 拡大倍率
+     */
+    private double magnification;
 
     Rectangle r;
 
@@ -31,11 +60,22 @@ public class TiledMap {
         this.isClicked = false;
     }
 
+    /**
+     * 描画
+     * @param g グラフィックオブジェクト
+     */
     void draw(Graphics g) {
         g.setColor(color);
         g.fillRect(posX, posY, width, height);
     }
 
+    /**
+     * 指定された点がタイルの範囲に入っているかを判定
+     * @param x 点のX座標
+     * @param y 点のY座標
+     * @return 指定された点がタイルの範囲に入っていたら {@code true},
+     *         範囲外であれば {@code false}.
+     */
     boolean contains(int x, int y) {
         int w = this.width;
         int h = this.height;
@@ -56,6 +96,10 @@ public class TiledMap {
                 (h < y_ || h > y));
     }
 
+    /**
+     * マウスリスナーを取得
+     * @return {@code MouseListener} オブジェクト
+     */
     MouseListener getMouseListener() {
         return new MouseListener() {
             public void mouseClicked(MouseEvent e) {}
@@ -76,6 +120,10 @@ public class TiledMap {
         };
     }
 
+    /**
+     * マウスモーションリスナーを取得
+     * @return {@code MouseMotionListener} オブジェクト
+     */
     MouseMotionListener getMouseMotionListener() {
         return new MouseMotionListener() {
             public void mouseDragged(MouseEvent e) {
