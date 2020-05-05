@@ -3,15 +3,15 @@ package xyz.osamusasa.map;
 import java.awt.*;
 import java.awt.event.*;
 
-public class TiledMap {
+public abstract class TiledMap {
     /**
      * タイルの左上のX座標
      */
-    private int posX;
+    protected int posX;
     /**
      * タイルの左上のY座標
      */
-    private int posY;
+    protected int posY;
 
     /**
      * 幅
@@ -21,11 +21,6 @@ public class TiledMap {
      * 高さ
      */
     private int height;
-
-    /**
-     * タイルの色
-     */
-    private Color color;
 
     /**
      * ドラッグ中であるか
@@ -45,11 +40,7 @@ public class TiledMap {
      */
     private double magnification;
 
-    Rectangle r;
-
-    public TiledMap(Color c) {
-        this.color = c;
-
+    public TiledMap() {
         this.posX = 500;
         this.posY = 500;
         this.width = 100;
@@ -60,13 +51,10 @@ public class TiledMap {
     }
 
     /**
-     * 描画
+     * 描画関数
      * @param g グラフィックオブジェクト
      */
-    void draw(Graphics g) {
-        g.setColor(color);
-        g.fillRect(posX, posY, (int)(width * magnification), (int)(height * magnification));
-    }
+    abstract void draw(Graphics g);
 
     /**
      * 指定された点がタイルの範囲に入っているかを判定
@@ -93,6 +81,22 @@ public class TiledMap {
         //    overflow  || intersect
         return ((w < x_ || w > x) &&
                 (h < y_ || h > y));
+    }
+
+    /**
+     * 描画されるときの幅を取得
+     * @return 描画されるときの幅
+     */
+    int getDrawableWidth() {
+        return (int)(width * magnification);
+    }
+
+    /**
+     * 描画されるときの高さを取得
+     * @return 描画されるときの高さ
+     */
+    int getDrawableHeight() {
+        return (int)(height * magnification);
     }
 
     /**

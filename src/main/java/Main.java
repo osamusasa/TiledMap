@@ -1,4 +1,4 @@
-import xyz.osamusasa.map.TiledMap;
+import xyz.osamusasa.map.SingleSquareTile;
 import xyz.osamusasa.map.TiledMapView;
 
 import javax.swing.*;
@@ -18,7 +18,7 @@ public class Main {
         //windowサイズを画面の最大サイズに設定
         frame.setBounds(desktopBounds);
 
-        TiledMapView map = new TiledMapView(new TiledMap(Color.BLUE));
+        TiledMapView map = new TiledMapView(new SingleSquareTile(Color.BLUE));
         frame.getContentPane().add(map);
 
         frame.setVisible(true);
