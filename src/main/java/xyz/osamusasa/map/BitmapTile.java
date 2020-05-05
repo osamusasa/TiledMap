@@ -40,7 +40,12 @@ public class BitmapTile extends TiledMap {
      * @param g グラフィックオブジェクト
      */
     void draw(Graphics g) {
-        g.drawImage(bitmap, posX, posY, null);
+        Image img = bitmap.getScaledInstance(
+                getDrawableWidth(),
+                getDrawableHeight(),
+                Image.SCALE_SMOOTH
+        );
+        g.drawImage(img, posX, posY, null);
         drawBounds(g);
     }
 }
