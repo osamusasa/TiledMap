@@ -57,6 +57,14 @@ public abstract class TiledMap {
     abstract void draw(Graphics g);
 
     /**
+     * 表示する枠を描画
+     * @param g グラフィックオブジェクト
+     */
+    protected void drawBounds(Graphics g) {
+        g.drawRect(posX, posY, getDrawableWidth(), getDrawableHeight());
+    }
+
+    /**
      * 指定された点がタイルの範囲に入っているかを判定
      * @param x 点のX座標
      * @param y 点のY座標

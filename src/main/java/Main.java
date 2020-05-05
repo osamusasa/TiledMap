@@ -1,3 +1,4 @@
+import xyz.osamusasa.map.BitmapTile;
 import xyz.osamusasa.map.SingleSquareTile;
 import xyz.osamusasa.map.TiledMapView;
 
@@ -18,7 +19,8 @@ public class Main {
         //windowサイズを画面の最大サイズに設定
         frame.setBounds(desktopBounds);
 
-        TiledMapView map = new TiledMapView(new SingleSquareTile(Color.BLUE));
+        //TiledMapView map = new TiledMapView(new SingleSquareTile(Color.BLUE));
+        TiledMapView map = new TiledMapView(new BitmapTile("src\\main\\resources\\test.bmp"));
         frame.getContentPane().add(map);
 
         frame.setVisible(true);
