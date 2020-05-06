@@ -13,10 +13,23 @@ public class BitmapTile extends TiledMap {
     private Image bitmap;
 
     /**
+     * 行
+     */
+    private int row;
+    /**
+     * 列
+     */
+    private int col;
+
+    /**
      * コンストラクタ
      * @param fileName ビットマップファイルのパス
      */
     public BitmapTile(String fileName) {
+        super(300, 200);
+        this.row = 2;
+        this.col = 3;
+
         InputStream is = null;
         try {
             is = new FileInputStream(fileName);
@@ -35,17 +48,52 @@ public class BitmapTile extends TiledMap {
     }
 
     /**
+     * 表示する枠を描画
+     *
+     * @param g グラフィックオブジェクト
+     */
+    @Override
+    protected void drawBounds(Graphics g) {
+        super.drawBounds(g);
+        for (int i=1; i<row; i++) {
+            g.drawLine(
+                    posX,
+                    posY + getDrawableHeight()/row*i,
+                    posX + getDrawableWidth(),
+                    posY + getDrawableHeight()/row*i
+            );
+        }
+        for (int i=1; i<col; i++) {
+            g.drawLine(
+                    posX + getDrawableWidth()/col*i,
+                    posY,
+                    posX + getDrawableWidth()/col*i,
+                    posY + getDrawableHeight()
+            );
+        }
+    }
+
+    /**
      * 描画関数
      *
      * @param g グラフィックオブジェクト
      */
     void draw(Graphics g) {
-        Image img = bitmap.getScaledInstance(
-                getDrawableWidth(),
-                getDrawableHeight(),
-                Image.SCALE_SMOOTH
-        );
-        g.drawImage(img, posX, posY, null);
+        int w = getDrawableWidth() / col;
+        int h = getDrawableHeight() / row;
+        Image img = bitmap.getScaledInstance(w, h, Image.SCALE_SMOOTH);
+
+        for (int i=0; i<row; i++) {
+            for (int j=0; j<col; j++) {
+                g.drawImage(
+                        img,
+                        posX + w*j,
+                        posY + h*i,
+                        null
+                );
+            }
+        }
+
         drawBounds(g);
     }
 }

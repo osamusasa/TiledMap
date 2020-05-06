@@ -40,6 +40,9 @@ public abstract class TiledMap {
      */
     private double magnification;
 
+    /**
+     * コンストラクタ
+     */
     public TiledMap() {
         this.posX = 500;
         this.posY = 500;
@@ -48,6 +51,18 @@ public abstract class TiledMap {
 
         this.isClicked = false;
         this.magnification = 1.0;
+    }
+
+    /**
+     * コンストラクタ
+     * @param width 幅
+     * @param height 高さ
+     */
+    public TiledMap(int width, int height) {
+        this();
+
+        this.width = width;
+        this.height = height;
     }
 
     /**
