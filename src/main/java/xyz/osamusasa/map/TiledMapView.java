@@ -19,6 +19,7 @@ public class TiledMapView extends JComponent {
         setMouseListener(map);
         setMouseMotionListener(map);
         setMouseWheelListener(map);
+        setKeyListener(map);
     }
 
     /**
@@ -51,6 +52,7 @@ public class TiledMapView extends JComponent {
         super.paint(g);
 
         map.draw(g);
+        requestFocusInWindow();
     }
 
     /**
@@ -122,6 +124,28 @@ public class TiledMapView extends JComponent {
                     mwl.mouseWheelMoved(e);
                     repaint();
                 }
+            }
+        });
+    }
+
+    /**
+     * キーリスナーをセット
+     * @param map 対象の {@code TiledMap} オブジェクト
+     */
+    private void setKeyListener(final TiledMap map) {
+        final KeyListener kl = map.getKeyListener();
+        addKeyListener(new KeyListener() {
+            public void keyTyped(KeyEvent e) {
+                kl.keyTyped(e);
+            }
+
+            public void keyPressed(KeyEvent e) {
+                kl.keyPressed(e);
+                repaint();
+            }
+
+            public void keyReleased(KeyEvent e) {
+                kl.keyReleased(e);
             }
         });
     }

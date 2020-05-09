@@ -2,15 +2,32 @@ package xyz.osamusasa.map;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.image.BufferedImage;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
 public class BitmapTile extends TiledMap {
     /**
-     * ビットマップオブジェクト
+     * 背景ビットマップオブジェクト
      */
-    private Image bitmap;
+    private Image bgImg;
+
+    /**
+     * キャラクタービットマップオブジェクト
+     */
+    private Image characterImg;
+
+    /**
+     * キャラクターの位置のX座標
+     */
+    private int charX;
+    /**
+     * キャラクターの位置のY座標
+     */
+    private int charY;
 
     /**
      * 行
@@ -22,6 +39,15 @@ public class BitmapTile extends TiledMap {
     private int col;
 
     /**
+     * 上下がループしてるか
+     */
+    private boolean isConnectUpDown;
+    /**
+     * 左右がループしてるか
+     */
+    private boolean isConnectLeftRight;
+
+    /**
      * コンストラクタ
      * @param fileName ビットマップファイルのパス
      */
@@ -30,21 +56,9 @@ public class BitmapTile extends TiledMap {
         this.row = 2;
         this.col = 3;
 
-        InputStream is = null;
-        try {
-            is = new FileInputStream(fileName);
-            bitmap = ImageIO.read(is);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } finally {
-            if (is != null) {
-                try {
-                    is.close();
-                } catch (IOException e) {
-                    System.err.println("対応してない種類の画像ファイル");
-                }
-            }
-        }
+        bgImg = loadBitmap(fileName);
+        isConnectUpDown = true;
+        isConnectLeftRight = true;
     }
 
     /**
@@ -81,7 +95,7 @@ public class BitmapTile extends TiledMap {
     void draw(Graphics g) {
         int w = getDrawableWidth() / col;
         int h = getDrawableHeight() / row;
-        Image img = bitmap.getScaledInstance(w, h, Image.SCALE_SMOOTH);
+        Image img = bgImg.getScaledInstance(w, h, Image.SCALE_SMOOTH);
 
         for (int i=0; i<row; i++) {
             for (int j=0; j<col; j++) {
@@ -94,6 +108,149 @@ public class BitmapTile extends TiledMap {
             }
         }
 
+        if (characterImg != null) {
+            g.drawImage(
+                    characterImg.getScaledInstance(
+                            w,
+                            h,
+                            Image.SCALE_SMOOTH),
+                    posX + w*charX,
+                    posY + h*charY,
+                    null
+            );
+        }
+
         drawBounds(g);
+    }
+
+    /**
+     * マップにキャラクターをセット
+     *
+     * @param fileName キャラクターのビットマップファイルのパス
+     */
+    public void addCharacter(String fileName) {
+        Image img = loadBitmap(fileName);
+        BufferedImage bimg = new BufferedImage(
+                img.getWidth(null),
+                img.getHeight(null),
+                BufferedImage.TYPE_INT_ARGB
+        );
+        Graphics g = bimg.getGraphics();
+        g.drawImage(img, 0, 0, null);
+        g.dispose();
+        changeTransparent(bimg, new Color(255, 174, 200));
+        characterImg = bimg;
+        charX = 0;
+        charY = 0;
+    }
+
+    /**
+     * 指定されたパスのファイルを読み込む
+     *
+     * @param fileName 開くビットマップファイルのパス
+     * @return 開いた画像オブジェクト
+     */
+    static Image loadBitmap(String fileName) {
+        InputStream is = null;
+        try {
+            is = new FileInputStream(fileName);
+            return ImageIO.read(is);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } finally {
+            if (is != null) {
+                try {
+                    is.close();
+                } catch (IOException e) {
+                    System.err.println("対応してない種類の画像ファイル");
+                }
+            }
+        }
+    }
+
+    /**
+     * 指定された色を透過色に置き換える
+     *
+     * @param img 画像
+     * @param c 透過色に置き換える色
+     */
+    public static void changeTransparent(BufferedImage img, Color c) {
+        int w = img.getWidth();	//BufferedImageの幅
+        int h = img.getHeight();	//BufferedImageの高さ
+        int t = c.getRGB();	//透明色に変換する色のRGB値
+
+        //RGB値を0(透明色)に置換
+        for (int y = 0; y < h; y++) {
+            for (int x = 0; x < w; x++) {
+                if (img.getRGB(x, y) == t) img.setRGB(x, y, 0);
+            }
+        }
+    }
+
+    /**
+     * キャラクターを指定方向に一マス動かす
+     *
+     * @param dir 方向キーのキーコード
+     */
+    private void characterMove(int dir) {
+        switch (dir) {
+            case KeyEvent.VK_LEFT:
+                if (isConnectLeftRight) {
+                    charX = (charX - 1 + col) % col;
+                } else {
+                    charX = Math.max(charX - 1, 0);
+                }
+                break;
+            case KeyEvent.VK_UP:
+                if (isConnectUpDown) {
+                    charY = (charY - 1 + row) % row;
+                } else {
+                    charY = Math.max(charY - 1, 0);
+                }
+                break;
+            case KeyEvent.VK_RIGHT:
+                if (isConnectLeftRight) {
+                    charX = (charX + 1) % col;
+                } else {
+                    charX = Math.min(charX + 1, col-1);
+                }
+                break;
+            case KeyEvent.VK_DOWN:
+                if (isConnectUpDown) {
+                    charY = (charY + 1) % row;
+                } else {
+                    charY = Math.min(charY + 1, row-1);
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
+    /**
+     * キーリスナーを取得
+     *
+     * @return {@code KeyListener} オブジェクト
+     */
+    @Override
+    KeyListener getKeyListener() {
+        KeyListener kl = super.getKeyListener();
+        return new KeyListener() {
+            public void keyTyped(KeyEvent e) {
+
+            }
+
+            public void keyPressed(KeyEvent e) {
+                int key = e.getKeyCode();
+                if (37<=key&&key<=40) {
+                    characterMove(key);
+                }
+//                System.out.println(e);
+            }
+
+            public void keyReleased(KeyEvent e) {
+
+            }
+        };
     }
 }

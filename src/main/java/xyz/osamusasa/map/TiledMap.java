@@ -176,4 +176,12 @@ public abstract class TiledMap {
             }
         };
     }
+
+    /**
+     * キーリスナーを取得
+     * @return {@code KeyListener} オブジェクト
+     */
+    KeyListener getKeyListener(){
+        return new KeyAdapter() {};
+    }
 }

@@ -20,7 +20,9 @@ public class Main {
         frame.setBounds(desktopBounds);
 
         //TiledMapView map = new TiledMapView(new SingleSquareTile(Color.BLUE));
-        TiledMapView map = new TiledMapView(new BitmapTile("src\\main\\resources\\test.bmp"));
+        BitmapTile bt = new BitmapTile("src\\main\\resources\\test.bmp");
+        bt.addCharacter("src\\main\\resources\\chara.bmp");
+        TiledMapView map = new TiledMapView(bt);
         frame.getContentPane().add(map);
 
         frame.setVisible(true);
