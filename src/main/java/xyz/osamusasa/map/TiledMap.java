@@ -126,23 +126,27 @@ public abstract class TiledMap {
      * マウスリスナーを取得
      * @return {@code MouseListener} オブジェクト
      */
-    MouseListener getMouseListener() {
+    final MouseListener getMouseListener() {
         return new MouseListener() {
-            public void mouseClicked(MouseEvent e) {}
+            public void mouseClicked(MouseEvent e) {
+                TiledMap.this.mouseClicked(e.getX(), e.getY());
+            }
 
             public void mousePressed(MouseEvent e) {
-                isClicked = true;
-                prevX = e.getX();
-                prevY = e.getY();
+                TiledMap.this.mousePressed(e.getX(), e.getY());
             }
 
             public void mouseReleased(MouseEvent e) {
-                isClicked = false;
+                TiledMap.this.mouseReleased(e.getX(), e.getY());
             }
 
-            public void mouseEntered(MouseEvent e) {}
+            public void mouseEntered(MouseEvent e) {
+                TiledMap.this.mouseEntered(e.getX(), e.getY());
+            }
 
-            public void mouseExited(MouseEvent e) {}
+            public void mouseExited(MouseEvent e) {
+                TiledMap.this.mouseExited(e.getX(), e.getY());
+            }
         };
     }
 
@@ -150,18 +154,15 @@ public abstract class TiledMap {
      * マウスモーションリスナーを取得
      * @return {@code MouseMotionListener} オブジェクト
      */
-    MouseMotionListener getMouseMotionListener() {
+    final MouseMotionListener getMouseMotionListener() {
         return new MouseMotionListener() {
             public void mouseDragged(MouseEvent e) {
-                if (isClicked) {
-                    posX += e.getX() - prevX;
-                    posY += e.getY() - prevY;
-                    prevX = e.getX();
-                    prevY = e.getY();
-                }
+                TiledMap.this.mouseDragged(e.getX(), e.getY());
             }
 
-            public void mouseMoved(MouseEvent e) {}
+            public void mouseMoved(MouseEvent e) {
+                TiledMap.this.mouseMoved(e.getX(), e.getY());
+            }
         };
     }
 
@@ -169,10 +170,10 @@ public abstract class TiledMap {
      * マウスホイールリスナーを取得
      * @return {@code MouseWheelListener} オブジェクト
      */
-    MouseWheelListener getMouseWheelListener(){
+    final MouseWheelListener getMouseWheelListener(){
         return new MouseWheelListener() {
             public void mouseWheelMoved(MouseWheelEvent e) {
-                magnification *= ( 1 - e.getWheelRotation() * 0.1);
+                TiledMap.this.mouseWheelMoved(e.getWheelRotation());
             }
         };
     }
@@ -181,7 +182,98 @@ public abstract class TiledMap {
      * キーリスナーを取得
      * @return {@code KeyListener} オブジェクト
      */
-    KeyListener getKeyListener(){
-        return new KeyAdapter() {};
+    final KeyListener getKeyListener(){
+        return new KeyListener() {
+            public void keyTyped(KeyEvent e) {
+                TiledMap.this.keyTyped(e.getKeyCode());
+            }
+
+            public void keyPressed(KeyEvent e) {
+                TiledMap.this.keyPressed(e.getKeyCode());
+            }
+
+            public void keyReleased(KeyEvent e) {
+                TiledMap.this.keyReleased(e.getKeyCode());
+            }
+        };
     }
+
+    /**
+     * マウスが左クリックされたときに呼ばれる
+     * @param x カーソルの位置のx座標
+     * @param y カーソルの位置のy座標
+     */
+    protected void mouseClicked(int x, int y) {}
+    /**
+     * マウスが押下されたときに呼ばれる
+     * @param x カーソルの位置のx座標
+     * @param y カーソルの位置のy座標
+     */
+    protected void mousePressed(int x, int y) {
+        isClicked = true;
+        prevX = x;
+        prevY = y;
+    }
+    /**
+     * マウスが離れたときに呼ばれる
+     * @param x カーソルの位置のx座標
+     * @param y カーソルの位置のy座標
+     */
+    protected void mouseReleased(int x, int y) {
+        isClicked = false;
+    }
+    /**
+     * マウスが領域に入ったときに呼ばれる
+     * @param x カーソルの位置のx座標
+     * @param y カーソルの位置のy座標
+     */
+    protected void mouseEntered(int x, int y) {}
+    /**
+     * マウスが領域から出たときに呼ばれる
+     * @param x カーソルの位置のx座標
+     * @param y カーソルの位置のy座標
+     */
+    protected void mouseExited(int x, int y) {}
+    /**
+     * マウスがドラッグしている間呼ばれる
+     * @param x カーソルの位置のx座標
+     * @param y カーソルの位置のy座標
+     */
+    protected void mouseDragged(int x, int y) {
+        if (isClicked) {
+            posX += x - prevX;
+            posY += y - prevY;
+            prevX = x;
+            prevY = y;
+        }
+    }
+    /**
+     * マウスが動いている間呼ばれる
+     * @param x カーソルの位置のx座標
+     * @param y カーソルの位置のy座標
+     */
+    protected void mouseMoved(int x, int y) {}
+    /**
+     * マウスのホイールが動いている間呼ばれる
+     * @param rotation ホイールが動いている方向
+     */
+    protected void mouseWheelMoved(int rotation) {
+        magnification *= ( 1 - rotation * 0.1);
+    }
+    /**
+     * キーがタイプされたときに呼ばれる
+     * @param code キーコード
+     */
+    protected void keyTyped(int code) {}
+    /**
+     * キーが押下されたときに呼ばれる
+     * @param code キーコード
+     */
+    protected void keyPressed(int code) {}
+    /**
+     * キーが離れたときに呼ばれる
+     * @param code キーコード
+     */
+    protected void keyReleased(int code) {}
+
 }

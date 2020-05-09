@@ -3,7 +3,6 @@ package xyz.osamusasa.map;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -150,7 +149,7 @@ public class BitmapTile extends TiledMap {
      * @param fileName 開くビットマップファイルのパス
      * @return 開いた画像オブジェクト
      */
-    static Image loadBitmap(String fileName) {
+    private static Image loadBitmap(String fileName) {
         InputStream is = null;
         try {
             is = new FileInputStream(fileName);
@@ -174,7 +173,7 @@ public class BitmapTile extends TiledMap {
      * @param img 画像
      * @param c 透過色に置き換える色
      */
-    public static void changeTransparent(BufferedImage img, Color c) {
+    private static void changeTransparent(BufferedImage img, Color c) {
         int w = img.getWidth();	//BufferedImageの幅
         int h = img.getHeight();	//BufferedImageの高さ
         int t = c.getRGB();	//透明色に変換する色のRGB値
@@ -228,29 +227,16 @@ public class BitmapTile extends TiledMap {
     }
 
     /**
-     * キーリスナーを取得
+     * キーが押下されたときに呼ばれる
      *
-     * @return {@code KeyListener} オブジェクト
+     * @param code キーコード
      */
     @Override
-    KeyListener getKeyListener() {
-        KeyListener kl = super.getKeyListener();
-        return new KeyListener() {
-            public void keyTyped(KeyEvent e) {
-
-            }
-
-            public void keyPressed(KeyEvent e) {
-                int key = e.getKeyCode();
-                if (37<=key&&key<=40) {
-                    characterMove(key);
-                }
-//                System.out.println(e);
-            }
-
-            public void keyReleased(KeyEvent e) {
-
-            }
-        };
+    protected void keyPressed(int code) {
+        super.keyPressed(code);
+        if (37<=code&&code<=40) {
+            characterMove(code);
+        }
+//        System.out.println(code);
     }
 }
