@@ -1,14 +1,18 @@
 package xyz.osamusasa.map;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 
+/**
+ * ビットマップを表示するタイル
+ */
 public class BitmapTile extends TiledMap {
+    /**
+     * ビットマップデータ
+     */
+    private BitmapData bitmapData;
+
     /**
      * 背景ビットマップオブジェクト
      */
@@ -47,17 +51,39 @@ public class BitmapTile extends TiledMap {
     private boolean isConnectLeftRight;
 
     /**
-     * コンストラクタ
-     * @param fileName ビットマップファイルのパス
+     * プライベートコンストラクタ
+     *
+     * コンストラクタの共通処理
      */
-    public BitmapTile(String fileName) {
+    private BitmapTile(){
         super(300, 200);
         this.row = 2;
         this.col = 3;
 
-        bgImg = loadBitmap(fileName);
         isConnectUpDown = true;
         isConnectLeftRight = true;
+    }
+
+    /**
+     * コンストラクタ
+     * @param fileName ビットマップファイルのパス
+     */
+    public BitmapTile(String fileName) {
+        this();
+
+        bgImg = BitmapData.loadBitmap(fileName);
+
+    }
+
+    /**
+     * コンストラクタ
+     *
+     * @param bitmapData 使用する {@code BitmapData} オブジェクト
+     */
+    public BitmapTile(BitmapData bitmapData) {
+        this();
+
+        this.bitmapData = bitmapData;
     }
 
     /**
@@ -123,67 +149,44 @@ public class BitmapTile extends TiledMap {
     }
 
     /**
+     * マップに背景をセット
+     *
+     * @param x 背景の画像の {@code BitmapData} オブジェクトのx座標
+     * @param y 背景の画像の {@code BitmapData} オブジェクトのy座標
+     */
+    public void addBackground(int x, int y) {
+        bgImg = bitmapData.getTile(x,y);
+    }
+
+    /**
      * マップにキャラクターをセット
      *
      * @param fileName キャラクターのビットマップファイルのパス
      */
     public void addCharacter(String fileName) {
-        Image img = loadBitmap(fileName);
-        BufferedImage bimg = new BufferedImage(
-                img.getWidth(null),
-                img.getHeight(null),
-                BufferedImage.TYPE_INT_ARGB
-        );
-        Graphics g = bimg.getGraphics();
-        g.drawImage(img, 0, 0, null);
-        g.dispose();
-        changeTransparent(bimg, new Color(255, 174, 200));
-        characterImg = bimg;
+        addCharacter(BitmapData.loadBitmap(fileName));
+    }
+
+    /**
+     * マップにキャラクターをセット
+     *
+     * @param x キャラクターの画像の {@code BitmapData} オブジェクトのx座標
+     * @param y キャラクターの画像の {@code BitmapData} オブジェクトのy座標
+     */
+    public void addCharacter(int x, int y) {
+        addCharacter(bitmapData.getTile(x,y));
+    }
+
+    /**
+     * マップにキャラクターをセット
+     *
+     * @param image キャラクターを表す画像
+     */
+    private void addCharacter(BufferedImage image) {
+        BitmapData.changeTransparent(image, new Color(255, 174, 200));
+        characterImg = image;
         charX = 0;
         charY = 0;
-    }
-
-    /**
-     * 指定されたパスのファイルを読み込む
-     *
-     * @param fileName 開くビットマップファイルのパス
-     * @return 開いた画像オブジェクト
-     */
-    private static Image loadBitmap(String fileName) {
-        InputStream is = null;
-        try {
-            is = new FileInputStream(fileName);
-            return ImageIO.read(is);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } finally {
-            if (is != null) {
-                try {
-                    is.close();
-                } catch (IOException e) {
-                    System.err.println("対応してない種類の画像ファイル");
-                }
-            }
-        }
-    }
-
-    /**
-     * 指定された色を透過色に置き換える
-     *
-     * @param img 画像
-     * @param c 透過色に置き換える色
-     */
-    private static void changeTransparent(BufferedImage img, Color c) {
-        int w = img.getWidth();	//BufferedImageの幅
-        int h = img.getHeight();	//BufferedImageの高さ
-        int t = c.getRGB();	//透明色に変換する色のRGB値
-
-        //RGB値を0(透明色)に置換
-        for (int y = 0; y < h; y++) {
-            for (int x = 0; x < w; x++) {
-                if (img.getRGB(x, y) == t) img.setRGB(x, y, 0);
-            }
-        }
     }
 
     /**

@@ -1,9 +1,8 @@
+import xyz.osamusasa.map.BitmapData;
 import xyz.osamusasa.map.BitmapTile;
-import xyz.osamusasa.map.SingleSquareTile;
 import xyz.osamusasa.map.TiledMapView;
 
 import javax.swing.*;
-import java.awt.*;
 
 public class Main {
     public static void main(String[] args) {
@@ -20,8 +19,12 @@ public class Main {
         frame.setBounds(desktopBounds);
 
         //TiledMapView map = new TiledMapView(new SingleSquareTile(Color.BLUE));
-        BitmapTile bt = new BitmapTile("src\\main\\resources\\test.bmp");
-        bt.addCharacter("src\\main\\resources\\chara.bmp");
+        BitmapData bd = new BitmapData("src\\main\\resources\\tile.bmp", 100, 100);
+        //BitmapTile bt = new BitmapTile("src\\main\\resources\\test.bmp");
+        BitmapTile bt = new BitmapTile(bd);
+        bt.addBackground(0,0);
+        bt.addCharacter(1,0);
+        //bt.addCharacter("src\\main\\resources\\chara.bmp");
         TiledMapView map = new TiledMapView(bt);
         frame.getContentPane().add(map);
 
