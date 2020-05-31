@@ -65,12 +65,14 @@ public class TiledMapView extends JComponent {
             public void mouseClicked(MouseEvent e) {
                 if (map.contains(e.getX(), e.getY())) {
                     ml.mouseClicked(e);
+                    repaint();
                 }
             }
 
             public void mousePressed(MouseEvent e) {
                 if (map.contains(e.getX(), e.getY())) {
                     ml.mousePressed(e);
+                    repaint();
                 }
             }
 
