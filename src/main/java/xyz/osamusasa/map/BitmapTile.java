@@ -7,7 +7,7 @@ import java.awt.image.BufferedImage;
 /**
  * ビットマップを表示するタイル
  */
-public class BitmapTile extends TiledMap {
+public class BitmapTile extends TableMap {
     /**
      * ビットマップデータ
      */
@@ -33,15 +33,6 @@ public class BitmapTile extends TiledMap {
     private int charY;
 
     /**
-     * 行
-     */
-    private int row;
-    /**
-     * 列
-     */
-    private int col;
-
-    /**
      * 上下がループしてるか
      */
     private boolean isConnectUpDown;
@@ -56,9 +47,7 @@ public class BitmapTile extends TiledMap {
      * コンストラクタの共通処理
      */
     private BitmapTile(){
-        super(300, 200);
-        this.row = 2;
-        this.col = 3;
+        super(2, 2, 3, 100, 100);
 
         isConnectUpDown = true;
         isConnectLeftRight = true;
@@ -87,64 +76,12 @@ public class BitmapTile extends TiledMap {
     }
 
     /**
-     * 表示する枠を描画
-     *
-     * @param g グラフィックオブジェクト
-     */
-    @Override
-    protected void drawBounds(Graphics g) {
-        super.drawBounds(g);
-        for (int i=1; i<row; i++) {
-            g.drawLine(
-                    posX,
-                    posY + getDrawableHeight()/row*i,
-                    posX + getDrawableWidth(),
-                    posY + getDrawableHeight()/row*i
-            );
-        }
-        for (int i=1; i<col; i++) {
-            g.drawLine(
-                    posX + getDrawableWidth()/col*i,
-                    posY,
-                    posX + getDrawableWidth()/col*i,
-                    posY + getDrawableHeight()
-            );
-        }
-    }
-
-    /**
      * 描画関数
      *
      * @param g グラフィックオブジェクト
      */
     void draw(Graphics g) {
-        int w = getDrawableWidth() / col;
-        int h = getDrawableHeight() / row;
-        Image img = bgImg.getScaledInstance(w, h, Image.SCALE_SMOOTH);
-
-        for (int i=0; i<row; i++) {
-            for (int j=0; j<col; j++) {
-                g.drawImage(
-                        img,
-                        posX + w*j,
-                        posY + h*i,
-                        null
-                );
-            }
-        }
-
-        if (characterImg != null) {
-            g.drawImage(
-                    characterImg.getScaledInstance(
-                            w,
-                            h,
-                            Image.SCALE_SMOOTH),
-                    posX + w*charX,
-                    posY + h*charY,
-                    null
-            );
-        }
-
+        super.draw(g);
         drawBounds(g);
     }
 
@@ -156,6 +93,7 @@ public class BitmapTile extends TiledMap {
      */
     public void addBackground(int x, int y) {
         bgImg = bitmapData.getTile(x,y);
+        fill(bgImg, 0);
     }
 
     /**
@@ -187,6 +125,7 @@ public class BitmapTile extends TiledMap {
         characterImg = image;
         charX = 0;
         charY = 0;
+        addImage(characterImg, 1, charX, charY);
     }
 
     /**
@@ -195,38 +134,40 @@ public class BitmapTile extends TiledMap {
      * @param dir 方向キーのキーコード
      */
     private void characterMove(int dir) {
+        removeImage(1, charX, charY);
         switch (dir) {
             case KeyEvent.VK_LEFT:
                 if (isConnectLeftRight) {
-                    charX = (charX - 1 + col) % col;
+                    charX = (charX - 1 + getCol()) % getCol();
                 } else {
                     charX = Math.max(charX - 1, 0);
                 }
                 break;
             case KeyEvent.VK_UP:
                 if (isConnectUpDown) {
-                    charY = (charY - 1 + row) % row;
+                    charY = (charY - 1 + getRow()) % getRow();
                 } else {
                     charY = Math.max(charY - 1, 0);
                 }
                 break;
             case KeyEvent.VK_RIGHT:
                 if (isConnectLeftRight) {
-                    charX = (charX + 1) % col;
+                    charX = (charX + 1) % getCol();
                 } else {
-                    charX = Math.min(charX + 1, col-1);
+                    charX = Math.min(charX + 1, getCol()-1);
                 }
                 break;
             case KeyEvent.VK_DOWN:
                 if (isConnectUpDown) {
-                    charY = (charY + 1) % row;
+                    charY = (charY + 1) % getRow();
                 } else {
-                    charY = Math.min(charY + 1, row-1);
+                    charY = Math.min(charY + 1, getRow()-1);
                 }
                 break;
             default:
                 break;
         }
+        addImage(characterImg, 1, charX, charY);
     }
 
     /**
